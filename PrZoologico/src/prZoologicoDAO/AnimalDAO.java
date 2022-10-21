@@ -5,11 +5,67 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public abstract class AnimalDAO {
 
 	private static Connection connection;
+	
+	//Modificar un animal
+	public static void updateAnimal (Animal animal) {
+		connection = openConnection();
+		
+		int id = animal.getId();
+		String nombre = animal.getNombre();
+		String habitat = animal.getHabitat();
+		double peso_aproximado = animal.getPeso_aproximado();
+		
+		String query = "update animales set nombre=?, habitat=?,peso_aproximado=?"
+				+ " where id=?";
+		
+		try {
+			PreparedStatement ps = connection.prepareStatement(query);
+			ps.setString(1, nombre);
+			ps.setString(2, habitat);
+			ps.setDouble(3, peso_aproximado);
+			ps.setInt(4, id);
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		closeConnection();
+	}
+	
+	// Buscar todos los animales
+	public static ArrayList<Animal> findAllAnimales() {
+		connection = openConnection();
+		
+		ArrayList<Animal> animales = new ArrayList<>();
+		
+		String query = "select * from animales";
+		
+		try {
+			PreparedStatement ps = connection.prepareStatement(query);
+			ResultSet rs = ps.executeQuery();
+			
+			while (rs.next()) {
+				 Animal animal = new Animal(rs.getInt("id"),
+						rs.getString("nombre"),
+						rs.getString("habitat"),
+						rs.getDouble("peso_aproximado"));
+				 animales.add(animal);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		closeConnection();
+		
+		return animales;		
+	}
 	
 	//Buscar un animal por id
 	public static Animal findById(int id) {
