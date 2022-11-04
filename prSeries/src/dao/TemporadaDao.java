@@ -3,12 +3,13 @@ package dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 
 import pojo.Temporada;
 import util.DatabaseConnection;
 
-public class TemporadaDao implements Dao<Temporada>{
+public class TemporadaDao extends ObjetoDao implements InterfazDao<Temporada>{
 
 	private static Connection connection;
 	
@@ -62,22 +63,19 @@ public class TemporadaDao implements Dao<Temporada>{
 	@Override
 	public void borrar(Temporada t) {
 		// TODO Auto-generated method stub
+		connection = openConnection();
 		
-	}
-
-	private static Connection openConnection() {
-		DatabaseConnection dbConnection = new DatabaseConnection();
-		connection = dbConnection.getConnection();
-		return connection;
-	}
-	
-	private static void closeConnection() {
+		String query = "delete from temporadas";
+		
 		try {
-			connection.close();
-			connection = null;
+			Statement statement=connection.createStatement();
+			statement.executeUpdate(query);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		closeConnection();
 	}
+
+
 }
